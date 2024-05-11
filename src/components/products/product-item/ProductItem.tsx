@@ -10,7 +10,7 @@ interface ProductProps {
 const ProductItem = ({ product }: ProductProps) => {
   return (
     <li>
-      <Link href={`/product/${product.id}`}>
+      <Link href={`/products/${product.id}`}>
         <div className="aspect-[3/4] relative mb-4">
           <Image
             src={product.imgSrc}
