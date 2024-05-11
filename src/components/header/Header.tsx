@@ -3,7 +3,7 @@ import React from 'react';
 
 const Header = () => {
   return (
-    <header className="fixed flex top-0 left-0 right-0 border border-gray-300">
+    <header className="bg-white sticky top-0 h-16 border-b flex items-center px-5 lg:px-8 z-10 shrink-0">
       <nav className="flex w-full justify-between items-center p-5">
         <div className="flex items-center">
           <Link href={'/'} className="font-bold text-2xl">
