@@ -3,8 +3,8 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "extends": [
     "next/core-web-vitals",
-    "airbnb",
-    "airbnb-typescript",
+    // "airbnb",
+    // "airbnb-typescript",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
     "prettier"
@@ -15,6 +15,10 @@
   "ignorePatterns": ["node_modules/"],
   "rules": {
     "react/react-in-jsx-scope": "off",
-    "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }]
+    "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }],
+    "no-restricted-exports": [
+      "error",
+      { "restrictedNamedExports": ["default"] }
+    ]
   }
 }

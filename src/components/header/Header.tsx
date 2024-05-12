@@ -1,7 +1,14 @@
+'use client';
+import { useModal } from '@/contexts/modal-context/ModalContext';
 import Link from 'next/link';
 import React from 'react';
+import LoginModal from '../modal/login-modal';
 
 const Header = () => {
+  const { open } = useModal();
+
+  const handleOpenLoginModal = () => open(<LoginModal />);
+
   return (
     <header className="bg-white sticky top-0 h-16 border-b flex items-center px-5 lg:px-8 z-10 shrink-0">
       <nav className="flex w-full justify-between items-center p-5">
@@ -20,12 +27,12 @@ const Header = () => {
           >
             회원가입
           </Link>
-          <Link
-            href={'/login'}
+          <button
             className="text-gray-800 hover:text-black transition"
+            onClick={handleOpenLoginModal}
           >
             로그인
-          </Link>
+          </button>
         </div>
       </nav>
     </header>
