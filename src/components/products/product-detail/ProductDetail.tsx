@@ -1,4 +1,5 @@
 'use client';
+import { getToken } from '@/api/auth';
 import { getProduct } from '@/api/products';
 import { Product } from '@/types/projects';
 import { useQuery } from '@tanstack/react-query';
@@ -15,6 +16,18 @@ const ProductDetail = ({ params }: ProductDetailProps) => {
     queryKey: ['product'],
     queryFn: () => getProduct(params.productId),
   });
+
+  const { data: accessToken } = useQuery({
+    queryKey: ['accessToken'],
+    queryFn: getToken,
+  });
+
+  const isCart = true;
+
+  const handleOnclickCartButton = () => {
+    // 장바구니 담기
+    // 장바구니 빼기
+  };
 
   return (
     <main className="px-5 lg:px-8 py-6 lg:py-10 mx-auto max-w-screen-lg flex flex-col grow w-full items-stretch">
@@ -52,8 +65,12 @@ const ProductDetail = ({ params }: ProductDetailProps) => {
             <span className="text-slate-900 font-bold">잔여 재고</span>
             <span className="col-span-4">{product?.onlineStock}</span>
           </div>
-          <button className="border border-slate-700 py-4 px-12 text-[15px] font-semibold bg-white transition hover:-translate-y-1 active:translate-y-0 hover:drop-shadow w-full data-[color=black]:bg-black data-[color=black]:text-white">
-            장바구니에 담기
+          <button className="border border-slate-700 py-4 px-12 text-[15px] font-semibold bg-black transition hover:-translate-y-1 active:translate-y-0 hover:drop-shadow w-full  text-white">
+            {!accessToken.success
+              ? '장바구니에 담기'
+              : isCart
+                ? '장바구니에서 빼기'
+                : '장바구니에 담기'}
           </button>
         </div>
       </section>
