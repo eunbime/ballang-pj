@@ -5,8 +5,6 @@ import axios from 'axios';
 import Link from 'next/link';
 import React from 'react';
 
-axios.defaults.withCredentials = true;
-
 const MainPage = () => {
   return (
     <div>

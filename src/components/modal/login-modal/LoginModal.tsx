@@ -3,8 +3,20 @@
 import React from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import Modal from '../Modal';
+import { useModal } from '@/contexts/modal-context/ModalContext';
+import { useMutation } from '@tanstack/react-query';
+import { logIn } from '@/api/auth';
 
 function LoginModal() {
+  const { close } = useModal();
+
+  const { mutate: loginMutate } = useMutation({
+    mutationFn: logIn,
+    onError: (error) => {
+      throw new Error('로그인 중 오류가 발생했습니다.', error);
+    },
+  });
+
   const {
     register,
     handleSubmit,
@@ -17,9 +29,20 @@ function LoginModal() {
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
-    reset();
+  const onSubmit: SubmitHandler<FieldValues> = async ({ email, password }) => {
+    try {
+      loginMutate(
+        { email, password },
+        {
+          onSuccess: () => close(),
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      throw new Error('에러가 발생했습니다.');
+    } finally {
+      reset();
+    }
   };
 
   return (
