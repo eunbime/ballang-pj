@@ -3,15 +3,14 @@ import axios from 'axios';
 
 export const logIn = async ({ email, password }: User) => {
   try {
-    const { data } = await axios.post(
+    await axios.post(
       `${process.env.NEXT_PUBLIC_SERVER}/auth/log-in`,
       {
         email,
         password,
       },
+      { withCredentials: true },
     );
-
-    console.log('login', data);
   } catch (error) {
     throw new Error();
   }
@@ -19,7 +18,9 @@ export const logIn = async ({ email, password }: User) => {
 
 export const logOut = async () => {
   try {
-    await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/auth/log-out`);
+    await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/auth/log-out`, {
+      withCredentials: true,
+    });
   } catch (error) {
     throw new Error();
   }
@@ -27,10 +28,14 @@ export const logOut = async () => {
 
 export const signUp = async ({ email, password }: User) => {
   try {
-    await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/auth/sign-up`, {
-      email,
-      password,
-    });
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_SERVER}/auth/sign-up`,
+      {
+        email,
+        password,
+      },
+      { withCredentials: true },
+    );
   } catch (error) {
     throw new Error();
   }
@@ -40,8 +45,8 @@ export const getToken = async () => {
   try {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_SERVER}/auth/refresh-token`,
+      { withCredentials: true },
     );
-    console.log('token', data);
     return data;
   } catch (error) {
     throw new Error();

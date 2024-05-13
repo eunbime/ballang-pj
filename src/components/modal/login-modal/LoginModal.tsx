@@ -4,11 +4,13 @@ import React from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import Modal from '../Modal';
 import { useModal } from '@/contexts/modal-context/ModalContext';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { logIn } from '@/api/auth';
 
 function LoginModal() {
   const { close } = useModal();
+
+  const queryClient = useQueryClient();
 
   const { mutate: loginMutate } = useMutation({
     mutationFn: logIn,
@@ -34,7 +36,10 @@ function LoginModal() {
       loginMutate(
         { email, password },
         {
-          onSuccess: () => close(),
+          onSuccess: () => {
+            close();
+            queryClient.invalidateQueries({ queryKey: ['accessToken'] });
+          },
         },
       );
     } catch (error) {
