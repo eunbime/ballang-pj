@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/header';
 import { ModalProvider } from '@/contexts/modal-context/ModalContext';
 import Provider from './provider';
+import axios from 'axios';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -11,6 +12,8 @@ export const metadata: Metadata = {
   title: 'Ballang',
   description: 'toy project Ballang',
 };
+
+axios.defaults.withCredentials = true;
 
 export default function RootLayout({
   children,
