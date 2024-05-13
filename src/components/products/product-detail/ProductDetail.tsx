@@ -1,8 +1,12 @@
 'use client';
 import { getToken } from '@/api/auth';
+import { addItemToCart, clearItemInCart, getCart } from '@/api/cart';
 import { getProduct } from '@/api/products';
+import LoginModal from '@/components/modal/login-modal';
+import { useModal } from '@/contexts/modal-context/ModalContext';
+import { Cart } from '@/types/cart';
 import { Product } from '@/types/projects';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -12,6 +16,11 @@ interface ProductDetailProps {
 }
 
 const ProductDetail = ({ params }: ProductDetailProps) => {
+  const queryClient = useQueryClient();
+
+  const { open } = useModal();
+  const handleOpenLoginModal = () => open(<LoginModal />);
+
   const { data: product } = useQuery<unknown, Error, Product>({
     queryKey: ['product'],
     queryFn: () => getProduct(params.productId),
@@ -22,11 +31,56 @@ const ProductDetail = ({ params }: ProductDetailProps) => {
     queryFn: getToken,
   });
 
-  const isCart = true;
+  const { data: cartProducts } = useQuery<unknown, Error, Cart[]>({
+    queryKey: ['cartProducts'],
+    queryFn: getCart,
+  });
+
+  const { mutate: addItemCartMutate } = useMutation({
+    mutationFn: addItemToCart,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cartProducts'] });
+    },
+  });
+
+  const { mutate: clearItemInCartMutate } = useMutation({
+    mutationFn: clearItemInCart,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cartProducts'] });
+    },
+  });
+
+  const isCart = cartProducts?.some(
+    (item: Cart) => item.productId === product?.id,
+  );
 
   const handleOnclickCartButton = () => {
-    // 장바구니 담기
-    // 장바구니 빼기
+    // 비로그인 시
+    if (!accessToken?.result) {
+      handleOpenLoginModal();
+    }
+
+    if (isCart) {
+      // 장바구니 빼기
+      clearItemInCartMutate(String(product?.id), {
+        onSuccess: () => {
+          alert('장바구니에서 상품이 제거 되었습니다.');
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      });
+    } else {
+      // 장바구니 담기
+      addItemCartMutate(String(product?.id), {
+        onSuccess: () => {
+          alert('장바구니에 상품이 담겼습니다.');
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      });
+    }
   };
 
   return (
@@ -65,8 +119,11 @@ const ProductDetail = ({ params }: ProductDetailProps) => {
             <span className="text-slate-900 font-bold">잔여 재고</span>
             <span className="col-span-4">{product?.onlineStock}</span>
           </div>
-          <button className="border border-slate-700 py-4 px-12 text-[15px] font-semibold bg-black transition hover:-translate-y-1 active:translate-y-0 hover:drop-shadow w-full  text-white">
-            {!accessToken.success
+          <button
+            className="border border-slate-700 py-4 px-12 text-[15px] font-semibold bg-black transition hover:-translate-y-1 active:translate-y-0 hover:drop-shadow w-full  text-white"
+            onClick={handleOnclickCartButton}
+          >
+            {!accessToken?.result
               ? '장바구니에 담기'
               : isCart
                 ? '장바구니에서 빼기'

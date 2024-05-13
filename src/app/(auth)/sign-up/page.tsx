@@ -1,12 +1,14 @@
 'use client';
 import { signUp } from '@/api/auth';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 const SignUpPage = () => {
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   const { mutate: signUpMutate } = useMutation({
     mutationFn: signUp,
@@ -37,6 +39,7 @@ const SignUpPage = () => {
         { email, password },
         {
           onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['accessToken'] });
             router.push('/');
           },
           onError: () => {
@@ -65,7 +68,7 @@ const SignUpPage = () => {
             {...register('email', {
               required: {
                 value: true,
-                message: '이메일을 입력해주세요',
+                message: '이메일을 입력해주세요',
               },
             })}
           />

@@ -1,3 +1,5 @@
+import { Brand } from './brands';
+
 export type Products = Product[];
 
 export interface Product {
@@ -10,10 +12,4 @@ export interface Product {
   deliveryType: string;
   brandId: number;
   brand: Brand;
-}
-
-export interface Brand {
-  id: number;
-  nameKr: string;
-  nameEn: string;
 }

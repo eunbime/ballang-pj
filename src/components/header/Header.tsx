@@ -3,11 +3,13 @@ import { useModal } from '@/contexts/modal-context/ModalContext';
 import Link from 'next/link';
 import React from 'react';
 import LoginModal from '../modal/login-modal';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getToken, logOut } from '@/api/auth';
 
 const Header = () => {
   const { open } = useModal();
+
+  const queryClient = useQueryClient();
 
   const { data: accessToken } = useQuery({
     queryKey: ['accessToken'],
@@ -24,7 +26,11 @@ const Header = () => {
   const handleOpenLoginModal = () => open(<LoginModal />);
 
   const handleLogout = () => {
-    logOutMutate();
+    logOutMutate(null, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['accessToken'] });
+      },
+    });
   };
 
   return (
@@ -40,16 +46,16 @@ const Header = () => {
         </div>
         <div className="flex items-center gap-x-4 text-[15px] font-medium ">
           <Link
-            href={accessToken?.success ? '/cart' : '/sign-up'}
+            href={accessToken?.result ? '/cart' : '/sign-up'}
             className="text-gray-800 hover:text-black transition"
           >
-            {accessToken?.success ? '장바구니' : '회원가입'}
+            {accessToken?.result ? '장바구니' : '회원가입'}
           </Link>
           <button
             className="text-gray-800 hover:text-black transition"
-            onClick={accessToken?.success ? handleLogout : handleOpenLoginModal}
+            onClick={accessToken?.result ? handleLogout : handleOpenLoginModal}
           >
-            {accessToken?.success ? '로그아웃' : '로그인'}
+            {accessToken?.result ? '로그아웃' : '로그인'}
           </button>
         </div>
       </nav>
